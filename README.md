@@ -3,6 +3,34 @@
 Project for the Evolutionary Computation Techniques class. First assignment.
 
 Author: [Ondřej Hruboš](https://github.com/hruboson), [Github repository](https://github.com/hruboson/AP9EVex1)
+
+This script implements a basic genetic algorithm for working with binary representation of individuals. The implementation is tested on the one max and leading ones problems.
+
+The general idea was to create an object-oriented implementation where each individual/candidate is an instance of class `Candidate` which are then part of a `Population`. Roulette and rank selection inside of populations were implemented and can be toggled using the `SELECTION` constant.
+
+## Implementation
+
+Each run is a generational genetic algorithm with a budget of `EVALS_PER_DIM * dimension`
+fitness evaluations per run, so the horizontal axis of the plots is comparable across
+dimensions. The starting population is generated randomly and fully evaluated.
+
+The main loop builds each new generation as:
+
+1. **Elitism**: the top `round(ELITISM_RATIO * pop_size)` candidates are copied over
+   unchanged (and *not* re-evaluated).
+2. **Selection**: two parents are drawn with either *roulette* (fitness-proportional,
+   with `+1` so that a zero-fitness individual still has a chance) or *rank* (linear
+   weights `1..N` on the fitness-sorted population). The same individual is re-drawn
+   up to 10 times to avoid self-fertilisation.
+3. **One-point crossover**: a random cut point in `1..d-1` is used to produce *two*
+   complementary children from the two parents.
+4. **Mutation**: each bit is flipped independently with probability `MUTATION_PROBABILITY`.
+
+`RUNS_NO` independent runs are performed for (problem, dimension) pair with a fixed
+`SEED`. The plotted graph is the mean over runs of the fitness after each
+evaluation, and the table below the plots summarises the final best fitness of every run
+(best, worst, mean, median, standard deviation).
+
 # Results
 
  The graph was generated for configuration:
@@ -25,6 +53,18 @@ SEED = 42
 # Usage
 
 You can tweak the parameters at the top of the script. All parameters are `CAPITALIZED`.
+
+```python
+RUNS_NO: int
+MUTATION_PROBABILITY: float <0;1>
+POPULATION_SIZE: int
+ELITISM_RATIO: float <0;1>
+SELECTION: str "roulette" | "rank"
+EVALS_PER_DIM: int
+DIMENSIONS: touple
+
+SEED: int
+```
 
 ## Run
 
