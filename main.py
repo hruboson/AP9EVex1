@@ -7,7 +7,7 @@ RUNS_NO = 10
 MUTATION_PROBABILITY = 0.0075
 POPULATION_SIZE = 50
 ELITISM_RATIO = 0.1
-SELECTION = "rank"
+SELECTION = "roulette" # "rank", "roulette"
 EVALS_PER_DIM = 100
 DIMENSIONS = (10, 30, 100)
 
@@ -167,7 +167,7 @@ def plot_results(curves: dict[str, dict[int, list[float]]],
             ax.plot(range(1, len(curve) + 1), curve, color="red" if name == "One-max" else "tab:blue", label="mean of best-so-far")
             ax.axhline(dimension, color="gray", linestyle="--", linewidth=0.8, label="optimum")
             ax.set_title(f"{name} - {dimension}D")
-            ax.set_xlabel("Number of objective function evaluations")
+            ax.set_xlabel("Evalutaions")
             ax.set_ylabel(f"Average best fitness ({RUNS_NO} runs)")
             ax.grid(True, alpha=0.3)
             ax.legend(loc="lower right")
@@ -190,10 +190,10 @@ def plot_results(curves: dict[str, dict[int, list[float]]],
     table.auto_set_font_size(False)
     table.set_fontsize(10)
     for (row, col), cell in table.get_celld().items():
-        if row == 0:                                   # header
+        if row == 0: # header
             cell.set_facecolor("#dbe5f1")
             cell.set_text_props(fontweight="bold")
-        elif (row - 1) // n_cols % 2 == 1:             # shade the second problem
+        elif (row - 1) // n_cols % 2 == 1: # shade the second problem
             cell.set_facecolor("#f4f4f4")
  
     fig.suptitle(f"Genetic algorithm - population {params['pop_size']}, "
@@ -213,7 +213,7 @@ def main():
     for name, objective in OBJECTIVES.items():
         print(f"=== {name} ===")
         curves[name], all_results[name] = {}, {}
-        for dimension in DIMENSIONS:      # 10D, 30D, 100D
+        for dimension in DIMENSIONS: # 10D, 30D, 100D
             results, curves[name][dimension] = run_experiment(objective, dimension, RUNS_NO, **params)
             all_results[name][dimension] = results
             print_stats(results, f"{dimension}D ({EVALS_PER_DIM * dimension} evals)")
